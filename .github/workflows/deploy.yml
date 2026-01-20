@@ -45,6 +45,12 @@ jobs:
             --s3-key syncme-0.0.1-SNAPSHOT-aws.jar \
             --region ${{ secrets.AWS_REGION }}
       
+      - name: Wait for code update to complete
+        run: |
+          aws lambda wait function-updated \
+            --function-name syncme-backend \
+            --region ${{ secrets.AWS_REGION }}
+      
       - name: Update Lambda environment variables
         run: |
           aws lambda update-function-configuration \
@@ -52,7 +58,7 @@ jobs:
             --environment Variables="{JWT_SECRET=${{ secrets.JWT_SECRET }},AWS_REGION=${{ secrets.AWS_REGION }},SPRING_PROFILES_ACTIVE=prod}" \
             --region ${{ secrets.AWS_REGION }}
       
-      - name: Wait for Lambda update
+      - name: Wait for configuration update to complete
         run: |
           aws lambda wait function-updated \
             --function-name syncme-backend \
