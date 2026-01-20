@@ -1,17 +1,23 @@
 package com.syncme.syncme.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.syncme.syncme.dto.auth.AuthResponse;
 import com.syncme.syncme.dto.auth.GoogleLoginRequest;
 import com.syncme.syncme.dto.common.ApiResponse;
 import com.syncme.syncme.dto.user.UserResponse;
 import com.syncme.syncme.entity.User;
 import com.syncme.syncme.service.AuthService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -39,7 +45,6 @@ public class AuthController {
         User user = authService.getCurrentUser(userDetails.getUsername());
         
         UserResponse response = UserResponse.builder()
-                .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .build();

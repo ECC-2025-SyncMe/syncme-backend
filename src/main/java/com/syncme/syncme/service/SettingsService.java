@@ -1,12 +1,13 @@
 package com.syncme.syncme.service;
 
+import org.springframework.stereotype.Service;
+
 import com.syncme.syncme.dto.settings.SettingsResponse;
 import com.syncme.syncme.entity.User;
 import com.syncme.syncme.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class SettingsService {
                 .build();
     }
     
-    @Transactional
     public void resetData(String email) {
         // TODO: 실제로는 사용자의 모든 기록 데이터를 삭제해야 함
         // 현재는 User는 유지하고 로그만 남김

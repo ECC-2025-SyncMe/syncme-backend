@@ -1,13 +1,14 @@
 package com.syncme.syncme.service;
 
+import org.springframework.stereotype.Service;
+
 import com.syncme.syncme.dto.user.UpdateNicknameRequest;
 import com.syncme.syncme.dto.user.UserResponse;
 import com.syncme.syncme.entity.User;
 import com.syncme.syncme.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +22,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         return UserResponse.builder()
-                .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .build();
     }
     
-    @Transactional
     public UserResponse updateNickname(String email, UpdateNicknameRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -36,13 +35,11 @@ public class UserService {
         User updatedUser = userRepository.save(user);
         
         return UserResponse.builder()
-                .id(updatedUser.getId())
                 .email(updatedUser.getEmail())
                 .nickname(updatedUser.getNickname())
                 .build();
     }
     
-    @Transactional
     public void deleteUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -1,24 +1,18 @@
 package com.syncme.syncme.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 
-@Entity
-@Table(name = "users")
+@DynamoDbBean
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,24 +20,43 @@ import lombok.Setter;
 @Builder
 public class User {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false, unique = true)
     private String email;
-    
-    @Column(nullable = false)
     private String googleId;
-    
-    @Column(length = 50)
     private String nickname;
+    private Long createdAt;
+    private Long updatedAt;
     
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("email")
+    public String getEmail() {
+        return email;
+    }
     
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    @DynamoDbSecondaryPartitionKey(indexNames = "googleId-index")
+    @DynamoDbAttribute("googleId")
+    public String getGoogleId() {
+        return googleId;
+    }
+    
+    @DynamoDbAttribute("nickname")
+    public String getNickname() {
+        return nickname;
+    }
+    
+    @DynamoDbAttribute("createdAt")
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+    
+    @DynamoDbAttribute("updatedAt")
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now().toEpochMilli();
+        }
+        updatedAt = Instant.now().toEpochMilli();
+    }
 }
