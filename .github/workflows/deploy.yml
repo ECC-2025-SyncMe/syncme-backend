@@ -55,7 +55,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name syncme-backend \
-            --environment Variables="{JWT_SECRET=${{ secrets.JWT_SECRET }},AWS_REGION=${{ secrets.AWS_REGION }},SPRING_PROFILES_ACTIVE=prod}" \
+            --environment Variables="{JWT_SECRET=${{ secrets.JWT_SECRET }},SPRING_PROFILES_ACTIVE=prod}" \
             --region ${{ secrets.AWS_REGION }}
       
       - name: Wait for configuration update to complete
