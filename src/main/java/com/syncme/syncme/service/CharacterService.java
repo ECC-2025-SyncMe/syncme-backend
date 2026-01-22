@@ -16,9 +16,16 @@ public class CharacterService {
         String date = statusService.getTodayDateString();
         DailyStatus today = statusService.getTodayEntityOrNull(email);
 
-        int score = 0;
+        // 기록이 없을 때 기본값: 50점(NORMAL)
+        int score = 50;
+
+        // 기록이 있으면 실제 계산값으로 덮어쓰기
         if (today != null) {
-            score = StatusCalculator.calculateScore(today.getEnergy(), today.getBurden(), today.getPassion());
+            score = StatusCalculator.calculateScore(
+                    today.getEnergy(),
+                    today.getBurden(),
+                    today.getPassion()
+            );
         }
 
         CharacterState state = StatusCalculator.toState(score);
