@@ -77,4 +77,30 @@ public class AuthService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+    
+    public AuthResponse refreshToken(String refreshToken) {
+        // Refresh Token 검증
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new IllegalArgumentException("Invalid refresh token");
+        }
+        
+        if (!jwtTokenProvider.isRefreshToken(refreshToken)) {
+            throw new IllegalArgumentException("Not a refresh token");
+        }
+        
+        // 사용자 정보 추출
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        User user = getCurrentUser(email);
+        
+        // 새로운 Access Token 발급
+        String newToken = jwtTokenProvider.createToken(user.getEmail());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+        
+        return AuthResponse.builder()
+                .token(newToken)
+                .refreshToken(newRefreshToken)
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .build();
+    }
 }

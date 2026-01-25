@@ -1,7 +1,7 @@
 package com.syncme.syncme.dto.auth;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,11 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class AuthResponse {
+public class RefreshTokenRequest {
     
-    private String token;
+    @NotBlank(message = "Refresh token is required")
     private String refreshToken;
-    private String email;
-    private String nickname;
 }
