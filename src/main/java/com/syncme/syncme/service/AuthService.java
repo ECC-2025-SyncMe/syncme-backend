@@ -47,9 +47,11 @@ public class AuthService {
             
             // JWT 토큰 생성
             String token = jwtTokenProvider.createToken(user.getEmail());
+            String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
             
             return AuthResponse.builder()
                     .token(token)
+                    .refreshToken(refreshToken)
                     .email(user.getEmail())
                     .nickname(user.getNickname())
                     .build();
