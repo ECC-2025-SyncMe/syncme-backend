@@ -34,3 +34,8 @@ build/
 Cookbook.md
 API_ENDPOINTS.md
 DEPLOYMENT.md
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local

@@ -51,18 +51,9 @@ jobs:
             --function-name syncme-backend \
             --region ${{ secrets.AWS_REGION }}
       
-      - name: Update Lambda environment variables
-        run: |
-          aws lambda update-function-configuration \
-            --function-name syncme-backend \
-            --environment Variables="{JWT_SECRET=${{ secrets.JWT_SECRET }},SPRING_PROFILES_ACTIVE=prod}" \
-            --region ${{ secrets.AWS_REGION }}
-      
-      - name: Wait for configuration update to complete
-        run: |
-          aws lambda wait function-updated \
-            --function-name syncme-backend \
-            --region ${{ secrets.AWS_REGION }}
+      # Note: 환경 변수는 Lambda 콘솔에서 직접 관리하세요
+      # update-function-configuration는 기존 환경 변수를 덮어쓰므로 주석 처리함
+      # 자동화가 필요하면 모든 환경 변수를 포함하거나 별도 스크립트 작성 필요
       
       - name: Verify deployment
         run: |
