@@ -33,18 +33,19 @@ public class StatusController {
             @Valid @RequestBody UpsertStatusRequest request
     ) {
         statusService.createToday(userDetails.getUsername(), request);
-        return ResponseEntity.ok(ApiResponse.success("Today's status saved", null));
+        return ResponseEntity.ok(ApiResponse.success("오늘의 상태 기록 완료!", null));
     }
 
     // 오늘 상태 수정
-    @PutMapping("/today")
+    @PatchMapping("/today")
     public ResponseEntity<ApiResponse<Void>> updateToday(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody UpsertStatusRequest request
+            @RequestBody UpdateStatusRequest request
     ) {
-        statusService.updateToday(userDetails.getUsername(), request);
-        return ResponseEntity.ok(ApiResponse.success("Today's status updated", null));
+        statusService.updateTodayPartial(userDetails.getUsername(), request);
+        return ResponseEntity.ok(ApiResponse.success("오늘의 상태 수정 완료!", null));
     }
+
 
     // 오늘 기록 여부 확인
     @GetMapping("/check")
@@ -75,11 +76,12 @@ public class StatusController {
     }
 
     // 모든 기록 초기화
-    @DeleteMapping("/history")
-    public ResponseEntity<ApiResponse<Void>> deleteAllHistory(
-            @AuthenticationPrincipal UserDetails userDetails
+    @DeleteMapping("/history/{date}")
+    public ResponseEntity<ApiResponse<Void>> deleteHistoryByDate(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String date
     ) {
-        statusService.deleteAllHistory(userDetails.getUsername());
-        return ResponseEntity.ok(ApiResponse.success("All status history deleted", null));
+        statusService.deleteHistoryByDate(userDetails.getUsername(), date);
+        return ResponseEntity.ok(ApiResponse.success("기록이 삭제되었습니다.", null));
     }
 }

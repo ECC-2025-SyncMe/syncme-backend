@@ -8,5 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CharacterSummaryResponse {
+    private String date;
     private String text;
 }

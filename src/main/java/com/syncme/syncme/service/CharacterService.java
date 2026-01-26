@@ -40,6 +40,7 @@ public class CharacterService {
 
     public CharacterScoreResponse getScore(String email) {
         return CharacterScoreResponse.builder()
+                .date(getCurrent(email).getDate())
                 .score(getCurrent(email).getScore())
                 .build();
     }
@@ -49,6 +50,7 @@ public class CharacterService {
         CharacterState state = CharacterState.valueOf(current.getState());
 
         return CharacterSummaryResponse.builder()
+                .date(current.getDate())
                 .text(StatusCalculator.summary(state))
                 .build();
     }
