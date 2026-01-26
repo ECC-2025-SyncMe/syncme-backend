@@ -23,10 +23,10 @@ public class SettingsController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
     
-    @PostMapping("/reset")
-    public ResponseEntity<ApiResponse<Void>> resetData(
+    @DeleteMapping("/data")
+    public ResponseEntity<ApiResponse<Void>> deleteData(
             @AuthenticationPrincipal UserDetails userDetails) {
-        settingsService.resetData(userDetails.getUsername());
-        return ResponseEntity.ok(ApiResponse.success("Data reset successfully", null));
+        settingsService.deleteData(userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success("Data deleted successfully", null));
     }
 }
