@@ -17,6 +17,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecon
 public class User {
     
     private String email;
+    private String userId;
     private String googleId;
     private String nickname;
     private Long createdAt;
@@ -30,6 +31,16 @@ public class User {
     
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    @DynamoDbSecondaryPartitionKey(indexNames = "userId-index")
+    @DynamoDbAttribute("userId")
+    public String getUserId() {
+        return userId;
+    }
+    
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
     
     @DynamoDbSecondaryPartitionKey(indexNames = "googleId-index")

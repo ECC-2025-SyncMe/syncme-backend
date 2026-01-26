@@ -1,15 +1,26 @@
 package com.syncme.syncme.controller;
 
-import com.syncme.syncme.dto.common.ApiResponse;
-import com.syncme.syncme.dto.user.UpdateNicknameRequest;
-import com.syncme.syncme.dto.user.UserResponse;
-import com.syncme.syncme.service.UserService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.syncme.syncme.dto.common.ApiResponse;
+import com.syncme.syncme.dto.user.UpdateNicknameRequest;
+import com.syncme.syncme.dto.user.UserResponse;
+import com.syncme.syncme.dto.user.UserSearchResponse;
+import com.syncme.syncme.service.UserService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/users")
@@ -38,5 +49,13 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails) {
         userService.deleteUser(userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<UserSearchResponse>>> searchUsers(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "nickname") String type) {
+        List<UserSearchResponse> response = userService.searchUsers(query, type);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

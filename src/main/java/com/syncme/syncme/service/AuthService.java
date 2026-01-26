@@ -63,12 +63,20 @@ public class AuthService {
     }
     
     private User createNewUser(String email, String googleId, String name, String picture) {
+        String userId = generateUserId();
+        
         User newUser = User.builder()
                 .email(email)
+                .userId(userId)
                 .googleId(googleId)
                 .nickname(name != null ? name : generateDefaultNickname(email))
                 .build();
         return userRepository.save(newUser);
+    }
+    
+    private String generateUserId() {
+        String uuid = java.util.UUID.randomUUID().toString().replace("-", "");
+        return "u_" + uuid.substring(0, 12);
     }
     
     private String generateDefaultNickname(String email) {
