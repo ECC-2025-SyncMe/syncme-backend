@@ -33,7 +33,7 @@ public class StatusCalculator {
         return switch (state) {
             case TIRED -> "잠깐 쉬어가도 괜찮아요!";
             case NORMAL -> "무난하게 잘 버텼어요!";
-            case ACTIVE -> "오늘은 활력이 넘쳐요! 하고 싶은 걸 하나 더 해봐요";
+            case ACTIVE -> "오늘은 활력이 넘쳐요!";
         };
     }
 
