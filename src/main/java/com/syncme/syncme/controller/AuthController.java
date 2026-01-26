@@ -46,17 +46,4 @@ public class AuthController {
         AuthResponse response = authService.refreshToken(request.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-    
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = authService.getCurrentUser(userDetails.getUsername());
-        
-        UserResponse response = UserResponse.builder()
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .build();
-        
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
 }
