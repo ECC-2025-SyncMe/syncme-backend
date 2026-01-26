@@ -45,6 +45,13 @@ public class AuthService {
             User user = userRepository.findByGoogleId(googleId)
                     .orElseGet(() -> createNewUser(email, googleId, name, picture));
             
+            // 기존 사용자의 userId가 없으면 자동 생성 (마이그레이션)
+            if (user.getUserId() == null) {
+                user.setUserId(generateUserId());
+                user = userRepository.save(user);
+                log.info("Generated userId for existing user: {}", user.getEmail());
+            }
+            
             // JWT 토큰 생성
             String token = jwtTokenProvider.createToken(user.getEmail());
             String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
@@ -52,6 +59,7 @@ public class AuthService {
             return AuthResponse.builder()
                     .token(token)
                     .refreshToken(refreshToken)
+                    .userId(user.getUserId())
                     .email(user.getEmail())
                     .nickname(user.getNickname())
                     .build();
@@ -109,6 +117,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(newToken)
                 .refreshToken(newRefreshToken)
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .build();
