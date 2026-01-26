@@ -30,6 +30,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         return UserResponse.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .build();
@@ -43,6 +44,7 @@ public class UserService {
         User updatedUser = userRepository.save(user);
         
         return UserResponse.builder()
+                .userId(updatedUser.getUserId())
                 .email(updatedUser.getEmail())
                 .nickname(updatedUser.getNickname())
                 .build();

@@ -21,6 +21,7 @@ public class SettingsService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         return SettingsResponse.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .version("1.0.0")
