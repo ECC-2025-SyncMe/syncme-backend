@@ -1,6 +1,8 @@
 package com.syncme.syncme.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,8 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,6 +49,18 @@ public class UserRepository {
                 .findFirst();
     }
     
+    public Optional<User> findByUserId(String userId) {
+        DynamoDbIndex<User> index = getUserTable().index("userId-index");
+        
+        QueryConditional queryConditional = QueryConditional
+                .keyEqualTo(Key.builder().partitionValue(userId).build());
+        
+        return index.query(queryConditional)
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .findFirst();
+    }
+    
     public boolean existsByEmail(String email) {
         return findByEmail(email).isPresent();
     }
@@ -60,5 +76,25 @@ public class UserRepository {
                 .partitionValue(user.getEmail())
                 .build();
         getUserTable().deleteItem(key);
+    }
+    
+    public List<User> searchByNickname(String query) {
+        String lowerQuery = query.toLowerCase();
+        
+        return getUserTable().scan()
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .filter(user -> user.getNickname().toLowerCase().contains(lowerQuery))
+                .collect(Collectors.toList());
+    }
+    
+    public List<User> searchByEmail(String query) {
+        String lowerQuery = query.toLowerCase();
+        
+        return getUserTable().scan()
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .filter(user -> user.getEmail().toLowerCase().contains(lowerQuery))
+                .collect(Collectors.toList());
     }
 }

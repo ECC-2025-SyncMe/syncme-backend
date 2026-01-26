@@ -32,9 +32,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/auth/google/login", "/auth/logout").permitAll()
+                .requestMatchers("/auth/google/login", "/auth/logout", "/auth/refresh").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/content/**").permitAll()
+                .requestMatchers("/home/**").permitAll()  // 공개 마이홈은 인증 불필요
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
