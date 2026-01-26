@@ -154,4 +154,12 @@ public class StatusService {
     public String getTodayDateString() {
         return todayDate();
     }
+    private String buildPk(String email) {
+        return "USER#" + email;
+    }
+
+    private String buildSk(String date) {
+        return "DATE#" + date;
+    }
+
 }
