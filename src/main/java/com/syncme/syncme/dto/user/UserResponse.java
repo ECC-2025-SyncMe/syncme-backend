@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 public class UserResponse {
     
+    private String userId;
     private String email;
     private String nickname;
 }
