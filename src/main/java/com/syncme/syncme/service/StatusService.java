@@ -59,7 +59,7 @@ public class StatusService {
         String sk = sk(date);
 
         if (statusRepository.exists(pk, sk)) {
-            throw new RuntimeException("Today's status already exists");
+            throw new RuntimeException("작성된 기록이 있습니다!");
         }
 
         String now = ZonedDateTime.now(KST).toString();
@@ -76,20 +76,24 @@ public class StatusService {
         statusRepository.put(item);
     }
 
-    public void updateToday(String email, UpsertStatusRequest request) {
-        String date = todayDate();
-        String pk = pk(email);
-        String sk = sk(date);
+    public void updateTodayPartial(String email, UpdateStatusRequest request) {
+        String pk = buildPk(email);
+        String sk = buildSk(getTodayDateString());
 
-        DailyStatus item = statusRepository.findByPkSk(pk, sk)
-                .orElseThrow(() -> new RuntimeException("Today's status not found"));
+        DailyStatus today = statusRepository.findByPkSk(pk, sk)
+                .orElseThrow(() -> new RuntimeException("기록이 없습니다."));
 
-        item.setEnergy(request.getEnergy());
-        item.setBurden(request.getBurden());
-        item.setPassion(request.getPassion());
-        item.setUpdatedAt(ZonedDateTime.now(KST).toString());
-
-        statusRepository.put(item);
+    
+        if (request.getEnergy() != null) {
+            today.setEnergy(request.getEnergy());
+        }
+        if (request.getBurden() != null) {
+            today.setBurden(request.getBurden());
+        }
+        if (request.getPassion() != null) {
+            today.setPassion(request.getPassion());
+        }
+        statusRepository.put(today);
     }
 
     public StatusCheckResponse checkToday(String email) {
@@ -132,8 +136,13 @@ public class StatusService {
                 .build();
     }
 
-    public void deleteAllHistory(String email) {
-        statusRepository.deleteAllByPk(pk(email));
+    public void deleteHistoryByDate(String email, String date) {
+        String pk = buildPk(email);
+        String sk = buildSk(date);
+        if (!statusRepository.exists(pk, sk)) {
+            throw new RuntimeException("기록이 없습니다.");
+        }
+        statusRepository.deleteByPkSk(pk, sk);
     }
 
     // 캐릭터/계산에서 사용
