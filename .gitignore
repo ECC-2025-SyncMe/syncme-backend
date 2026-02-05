@@ -31,9 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-Cookbook.md
-API_ENDPOINTS.md
-DEPLOYMENT.md
 
 ### Environment Variables ###
 .env
