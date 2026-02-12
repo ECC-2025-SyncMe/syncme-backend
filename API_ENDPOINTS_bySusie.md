@@ -565,7 +565,7 @@ Authorization: Bearer {토큰}
   "success": true,
   "message": null,
   "data": {
-    "shareLink": "https://syncme.app/home/u_a1b2c3d4e5f6",
+    "shareLink": "https://syncme-frontend.vercel.app/home/u_a1b2c3d4e5f6",
     "userId": "u_a1b2c3d4e5f6"
   }
 }

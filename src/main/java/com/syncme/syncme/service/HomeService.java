@@ -20,7 +20,7 @@ public class HomeService {
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     
-    @Value("${app.frontend.url:https://syncme.app}")
+    @Value("${app.frontend.url:https://syncme-frontend.vercel.app}")
     private String frontendUrl;
     
     public HomeResponse getHome(String userId, String viewerEmail) {
