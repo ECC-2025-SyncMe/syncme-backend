@@ -962,3 +962,191 @@ curl -X DELETE https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/defau
     - `syncme-daily-status`
     - `syncme-friends` (with `targetUserId-index` GSI)
 - **CORS**: 모든 origin 허용 (프로덕션에서는 특정 도메인만 허용 권장)
+
+---
+
+## 🧪 9. 프론트엔드 테스트용 계정 정보
+
+> **💡 사용 방법**: Postman에서 API 한 번 호출 → 응답에서 토큰 복사 → 프론트엔드에 전달
+
+---
+
+### 📝 테스트 계정 생성 방법
+
+**1. Postman에서 API 호출:**
+
+```
+POST https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/test-data?days=14
+```
+
+**2. 응답에서 토큰 복사:**
+
+응답 예시:
+```json
+{
+  "success": true,
+  "data": {
+    "mainAccount": {
+      "userId": "u_abc123def456",
+      "email": "testmain@syncme.com",
+      "nickname": "TestMain User",
+      "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0bWFpbkBzeW5jbWUuY29tIiwiaWF0IjoxNjk2MTIzNDU2LCJleHAiOjE2OTYyMDk4NTZ9...",
+      "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0bWFpbkBzeW5jbWUuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE2OTYxMjM0NTYsImV4cCI6MTY5NjcyODI1Nn0..."
+    },
+    "friendAccounts": [
+      {
+        "userId": "u_111222333444",
+        "email": "testfriend1@syncme.com",
+        "nickname": "TestFriend 1",
+        "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+      },
+      {
+        "userId": "u_222333444555",
+        "email": "testfriend2@syncme.com",
+        "nickname": "TestFriend 2",
+        "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+      },
+      {
+        "userId": "u_333444555666",
+        "email": "testfriend3@syncme.com",
+        "nickname": "TestFriend 3",
+        "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
+      }
+    ],
+    "daysOfData": 14
+  }
+}
+```
+
+**3. 프론트엔드에 전달할 정보:**
+
+슬랙/메시지로 다음 정보만 전달:
+
+```
+📱 메인 테스트 계정
+Email: testmain@syncme.com
+Access Token: eyJhbGciOiJIUzI1NiJ9... (전체 복사)
+Refresh Token: eyJhbGciOiJIUzI1NiJ9... (전체 복사)
+
+👥 친구1 계정
+Email: testfriend1@syncme.com
+Access Token: eyJhbGciOiJIUzI1NiJ9...
+Refresh Token: eyJhbGciOiJIUzI1NiJ9...
+
+👥 친구2 계정
+Email: testfriend2@syncme.com
+Access Token: eyJhbGciOiJIUzI1NiJ9...
+Refresh Token: eyJhbGciOiJIUzI1NiJ9...
+
+👥 친구3 계정
+Email: testfriend3@syncme.com
+Access Token: eyJhbGciOiJIUzI1NiJ9...
+Refresh Token: eyJhbGciOiJIUzI1NiJ9...
+```
+
+---
+
+### 🔌 API 상세 정보
+
+**Endpoint:**
+```http
+POST /admin/test-data?days=14
+```
+
+**Full URL:**
+```
+https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/test-data?days=14
+```
+
+**Query Parameters:**
+- `days` (optional): 생성할 과거 데이터 일수 (기본값: 14, 범위: 1~90)
+
+**생성되는 내용:**
+- 4개의 User 계정 (DynamoDB에 실제 저장)
+- 각 계정별 과거 14일간의 기분 데이터 (Energy, Burden, Passion)
+- 메인 계정 → 친구 3명 팔로우 관계 설정
+- 각 계정의 유효한 JWT 토큰 (Access Token 24시간, Refresh Token 7일)
+
+**생성되는 데이터:**
+- 4개의 User 레코드 (DynamoDB `syncme-users` 테이블)
+- 각 계정별 N일 × 4 = 총 N×4개의 DailyStatus 레코드
+- 3개의 Friend 관계 (메인 → 친구1, 친구2, 친구3)
+- 각 계정의 유효한 JWT Access Token 및 Refresh Token
+
+**직접 API 호출 (필요시):**
+```bash
+# Lambda 배포 서버로 호출
+curl -X POST "https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/test-data?days=14"
+```
+
+---
+
+### 🗑️ 테스트 데이터 삭제 API
+
+```http
+---
+
+### 🗑️ 테스트 데이터 삭제 (필요시)
+
+**Postman에서 호출:**
+```
+DELETE https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/test-data
+```
+
+**응답:**
+```json
+{
+  "success": true,
+  "message": "Test data deleted successfully",
+  "data": null
+}
+```
+
+---
+
+## 📊 테스트 계정 정보
+
+| 계정 | Email | Nickname | 역할 |
+|------|-------|----------|------|
+| Main | `testmain@syncme.com` | TestMain User | 메인 테스트 계정 (친구 3명 팔로우) |
+| Friend 1 | `testfriend1@syncme.com` | TestFriend 1 | 친구 계정 1 |
+| Friend 2 | `testfriend2@syncme.com` | TestFriend 2 | 친구 계정 2 |
+| Friend 3 | `testfriend3@syncme.com` | TestFriend 3 | 친구 계정 3 |
+
+### 프론트엔드 사용 예시
+
+```javascript
+// 백엔드에서 받은 토큰
+const accessToken = "eyJhbGciOiJIUzI1NiJ9...";  // Postman 응답에서 복사
+const refreshToken = "eyJhbGciOiJIUzI1NiJ9...";
+
+// localStorage에 저장
+localStorage.setItem('accessToken', accessToken);
+localStorage.setItem('refreshToken', refreshToken);
+
+// API 호출
+const API_URL = 'https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default';
+
+fetch(`${API_URL}/users/me`, {
+  headers: {
+    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+  }
+});
+```
+
+### 생성되는 데이터
+
+- **기분 데이터**: 각 계정별 과거 14일 (Energy, Burden, Passion)
+- **데이터 범위**: 20~90 (자연스러운 패턴)
+- **Friend 관계**: 메인 계정이 친구 3명 모두 팔로우
+- **토큰 유효기간**: Access Token 24시간, Refresh Token 7일
+
+---
+
+## ⚠️ 주의사항
+
+- 토큰 만료 시 Postman에서 API 다시 호출하여 새 토큰 생성
+- 프로덕션 배포 전 `/admin/**` 엔드포인트 및 관련 코드 제거 필요
