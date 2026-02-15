@@ -159,6 +159,46 @@ Content-Type: application/json
 > 4. 새로운 Access Token과 Refresh Token으로 업데이트
 > 5. Refresh Token도 만료된 경우 재로그인 필요
 
+---
+
+## ⚠️ 인증 실패 및 토큰 만료 에러 처리
+
+### 만료된 Access Token으로 API 요청 시
+
+**Status Code:** `401 Unauthorized`
+
+**Response:**
+```json
+{
+  "success": false,
+  "message": "Unauthorized - Token expired or invalid",
+  "data": null
+}
+```
+
+### 토큰 없이 인증이 필요한 API 요청 시
+
+**Status Code:** `401 Unauthorized`
+
+**Response:**
+```json
+{
+  "success": false,
+  "message": "Unauthorized - Token expired or invalid",
+  "data": null
+}
+```
+
+> **프론트엔드 인터셉터 처리 가이드:**
+> 1. API 응답이 `401 Unauthorized`인 경우
+> 2. localStorage에서 `refreshToken` 확인
+> 3. Refresh Token이 있으면 `/auth/refresh` 호출
+> 4. 새로운 토큰으로 localStorage 업데이트
+> 5. 원본 요청 재시도
+> 6. Refresh Token도 만료된 경우 로그인 페이지로 리다이렉트
+
+---
+
 ### 1.3 로그아웃
 ```http
 POST /auth/logout

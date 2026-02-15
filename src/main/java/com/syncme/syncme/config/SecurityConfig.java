@@ -1,6 +1,7 @@
 package com.syncme.syncme.config;
 
 import com.syncme.syncme.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,15 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write(
+                        "{\"success\":false,\"message\":\"Unauthorized - Token expired or invalid\",\"data\":null}"
+                    );
+                })
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
