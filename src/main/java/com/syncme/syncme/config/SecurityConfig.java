@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/content/**").permitAll()
                 .requestMatchers("/home/**").permitAll()  // 공개 마이홈은 인증 불필요
+                .requestMatchers("/admin/**").permitAll()  // 테스트용 관리자 API (프로덕션에서는 제거 필요)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
