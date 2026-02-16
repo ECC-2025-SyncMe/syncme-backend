@@ -97,4 +97,11 @@ public class UserRepository {
                 .filter(user -> user.getEmail().toLowerCase().contains(lowerQuery))
                 .collect(Collectors.toList());
     }
+    
+    public List<User> findAll() {
+        return getUserTable().scan()
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
 }
