@@ -39,13 +39,13 @@ public class CommentService {
             throw new IllegalArgumentException("Cannot comment on your own page");
         }
         
-        // 양쪽 팔로우 확인 (서로 친구인지)
-        boolean iFollowTarget = friendRepository.isFollowing(myEmail, targetUser.getEmail());
-        boolean targetFollowsMe = friendRepository.isFollowing(targetUser.getEmail(), myEmail);
-        
-        if (!iFollowTarget || !targetFollowsMe) {
-            throw new IllegalArgumentException("Can only comment on mutual friends");
-        }
+        // 양쪽 팔로우 확인 (서로 친구인지) - 주석처리: 누구나 댓글 가능
+        // boolean iFollowTarget = friendRepository.isFollowing(myEmail, targetUser.getEmail());
+        // boolean targetFollowsMe = friendRepository.isFollowing(targetUser.getEmail(), myEmail);
+        // 
+        // if (!iFollowTarget || !targetFollowsMe) {
+        //     throw new IllegalArgumentException("Can only comment on mutual friends");
+        // }
         
         // 댓글 생성
         Comment comment = commentRepository.createComment(
