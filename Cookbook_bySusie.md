@@ -75,6 +75,11 @@
     GET    /friends/following         // 내가 팔로우한 사람들
     GET    /friends/followers         // 나를 팔로우한 사람들
     GET    /friends                  // 친구 목록 (서로 팔로우)
+    POST   /friends/{userId}/comments // 친구에게 댓글 작성 (양쪽 팔로우 필수)
+    GET    /friends/{userId}/comments // 친구가 받은 댓글 조회
+- Comments / 댓글
+    GET    /comments/received         // 내가 받은 댓글 조회
+    DELETE /comments/{commentId}      // 내가 작성한 댓글 삭제
 - Home / 공개 마이홈 (공유)
     GET /home/{userId}
     GET /home/me/share-link

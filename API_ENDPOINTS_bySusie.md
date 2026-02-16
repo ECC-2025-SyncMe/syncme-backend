@@ -539,6 +539,183 @@ Authorization: Bearer {토큰}
 
 ---
 
+## 4.6 Comments API (댓글 기능)
+
+**중요:** 댓글은 양쪽 팔로우(서로 친구)인 경우에만 작성할 수 있습니다.
+
+### 4.6.1 친구에게 댓글 작성
+```http
+POST /friends/{userId}/comments
+Authorization: Bearer {토큰}
+Content-Type: application/json
+```
+
+**설명:** 친구의 홈에 댓글을 작성합니다. 양쪽 팔로우(서로 친구)인 경우에만 가능합니다.
+
+**Path Parameter:**
+- `userId`: 댓글을 작성할 친구의 userId
+
+**Request:**
+```json
+{
+  "content": "친구야 안녕! 오늘 기분이 좋아 보이네 😊"
+}
+```
+
+> **Validation:**
+> - `content`: 필수, 1~500자
+
+**Response (성공):**
+```json
+{
+  "success": true,
+  "message": "Comment created successfully",
+  "data": {
+    "commentId": "c_123abc456def",
+    "authorUserId": "u_a1b2c3d4e5f6",
+    "authorNickname": "작성자닉네임",
+    "targetUserId": "u_g7h8i9j0k1l2",
+    "content": "친구야 안녕! 오늘 기분이 좋아 보이네 😊",
+    "createdAt": 1708054800000
+  }
+}
+```
+
+**Response (실패 - 친구가 아님):**
+```json
+{
+  "success": false,
+  "message": "Can only comment on mutual friends",
+  "data": null
+}
+```
+
+**Response (실패 - 자기 자신):**
+```json
+{
+  "success": false,
+  "message": "Cannot comment on your own page",
+  "data": null
+}
+```
+
+### 4.6.2 친구가 받은 댓글 조회
+```http
+GET /friends/{userId}/comments
+Authorization: Bearer {토큰}
+```
+
+**설명:** 특정 친구가 받은 댓글 목록을 조회합니다. 최신순으로 정렬됩니다.
+
+**Path Parameter:**
+- `userId`: 댓글을 조회할 친구의 userId
+
+**Request:** 없음 (Authorization 헤더 필요)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": null,
+  "data": [
+    {
+      "commentId": "c_123abc456def",
+      "authorUserId": "u_a1b2c3d4e5f6",
+      "authorNickname": "작성자1",
+      "targetUserId": "u_g7h8i9j0k1l2",
+      "content": "친구야 안녕! 오늘 기분이 좋아 보이네 😊",
+      "createdAt": 1708054800000
+    },
+    {
+      "commentId": "c_789ghi012jkl",
+      "authorUserId": "u_m3n4o5p6q7r8",
+      "authorNickname": "작성자2",
+      "targetUserId": "u_g7h8i9j0k1l2",
+      "content": "화이팅!",
+      "createdAt": 1708051200000
+    }
+  ]
+}
+```
+
+### 4.6.3 내가 받은 댓글 조회
+```http
+GET /comments/received
+Authorization: Bearer {토큰}
+```
+
+**설명:** 내가 받은 모든 댓글을 조회합니다. 최신순으로 정렬됩니다.
+
+**Request:** 없음 (Authorization 헤더 필요)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": null,
+  "data": [
+    {
+      "commentId": "c_123abc456def",
+      "authorUserId": "u_a1b2c3d4e5f6",
+      "authorNickname": "친구A",
+      "targetUserId": "u_myuserid123",
+      "content": "오늘도 힘내!",
+      "createdAt": 1708054800000
+    },
+    {
+      "commentId": "c_456def789ghi",
+      "authorUserId": "u_s9t0u1v2w3x4",
+      "authorNickname": "친구B",
+      "targetUserId": "u_myuserid123",
+      "content": "잘하고 있어!",
+      "createdAt": 1708051200000
+    }
+  ]
+}
+```
+
+### 4.6.4 내가 작성한 댓글 삭제
+```http
+DELETE /comments/{commentId}
+Authorization: Bearer {토큰}
+```
+
+**설명:** 내가 작성한 댓글을 삭제합니다. 본인이 작성한 댓글만 삭제할 수 있습니다.
+
+**Path Parameter:**
+- `commentId`: 삭제할 댓글의 ID
+
+**Request:** 없음 (Authorization 헤더 필요)
+
+**Response (성공):**
+```json
+{
+  "success": true,
+  "message": "Comment deleted successfully",
+  "data": null
+}
+```
+
+**Response (실패 - 본인 댓글 아님):**
+```json
+{
+  "success": false,
+  "message": "Can only delete your own comments",
+  "data": null
+}
+```
+
+**Response (실패 - 댓글 없음):**
+```json
+{
+  "success": false,
+  "message": "Comment not found",
+  "data": null
+}
+```
+
+---
+
 ## 5. Home API (공개 마이홈)
 
 ### 5.1 공개 홈 조회
@@ -756,7 +933,61 @@ curl https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/setting
   -H "Authorization: Bearer $TOKEN"
 ```
 
-### 7. 계정 삭제
+### 7. 친구에게 댓글 작성
+```bash
+# 친구의 userId를 변수에 저장
+FRIEND_USER_ID="u_a1b2c3d4e5f6"
+
+# 로컬
+curl -X POST http://localhost:8080/friends/$FRIEND_USER_ID/comments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "친구야 안녕! 오늘도 화이팅 😊"}'
+
+# Lambda
+curl -X POST https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/friends/$FRIEND_USER_ID/comments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "친구야 안녕! 오늘도 화이팅 😊"}'
+```
+
+### 8. 친구가 받은 댓글 조회
+```bash
+# 로컬
+curl http://localhost:8080/friends/$FRIEND_USER_ID/comments \
+  -H "Authorization: Bearer $TOKEN"
+
+# Lambda
+curl https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/friends/$FRIEND_USER_ID/comments \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### 9. 내가 받은 댓글 조회
+```bash
+# 로컬
+curl http://localhost:8080/comments/received \
+  -H "Authorization: Bearer $TOKEN"
+
+# Lambda
+curl https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/comments/received \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### 10. 댓글 삭제
+```bash
+# 댓글 ID를 변수에 저장
+COMMENT_ID="c_123abc456def"
+
+# 로컬
+curl -X DELETE http://localhost:8080/comments/$COMMENT_ID \
+  -H "Authorization: Bearer $TOKEN"
+
+# Lambda
+curl -X DELETE https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/comments/$COMMENT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### 11. 계정 삭제
 ```bash
 # 로컬
 curl -X DELETE http://localhost:8080/users/me \
@@ -940,12 +1171,14 @@ curl -X DELETE https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/defau
   - `/auth/me`
   - `/users/**`
   - `/friends/**`
+  - `/comments/**`
   - `/settings/**`
 - **데이터베이스**: 
   - DynamoDB Tables:
     - `syncme-users` (with `userId-index`, `googleId-index` GSI)
     - `syncme-daily-status`
     - `syncme-friends` (with `targetUserId-index` GSI)
+    - `syncme-comments`
 - **CORS**: 모든 origin 허용 (프로덕션에서는 특정 도메인만 허용 권장)
 
 ## 환경 변수
