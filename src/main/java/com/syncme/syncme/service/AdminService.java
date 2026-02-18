@@ -147,16 +147,34 @@ public class AdminService {
     }
     
     /**
-     * 자연스러운 기분 데이터 생성 (20~90 범위)
+     * 다양한 기분 데이터 생성 (20~90 범위, 전체 구간 골고루)
      */
     private int generateMoodValue(int dayOffset, int totalDays) {
-        // 최근일수록 약간 높은 값, 과거일수록 약간 낮은 값 경향
-        int base = 50 + (int)(Math.sin(dayOffset * 0.3) * 20);
-        int variance = random.nextInt(30) - 15; // -15 ~ +15
-        int value = base + variance;
+        // 5가지 패턴 중 랜덤 선택하여 다양한 점수대 생성
+        int pattern = random.nextInt(5);
+        int value;
         
-        // 20~90 범위로 제한 (너무 극단적인 값 방지)
-        return Math.max(20, Math.min(90, value));
+        switch (pattern) {
+            case 0: // 낮은 점수대 (20~40)
+                value = 20 + random.nextInt(21);
+                break;
+            case 1: // 중하 점수대 (35~55)
+                value = 35 + random.nextInt(21);
+                break;
+            case 2: // 중간 점수대 (45~65)
+                value = 45 + random.nextInt(21);
+                break;
+            case 3: // 중상 점수대 (55~75)
+                value = 55 + random.nextInt(21);
+                break;
+            case 4: // 높은 점수대 (70~90)
+                value = 70 + random.nextInt(21);
+                break;
+            default:
+                value = 20 + random.nextInt(71); // 전체 범위 랜덤
+        }
+        
+        return value;
     }
     
     /**
