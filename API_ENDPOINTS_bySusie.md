@@ -724,7 +724,7 @@ GET /home/{userId}
 Authorization: Bearer {토큰} (선택사항)
 ```
 
-**설명:** 사용자의 공개 홈을 조회합니다. 인증 없이도 접근 가능하며, 인증된 상태에서는 팔로우 여부가 포함됩니다.
+**설명:** 사용자의 공개 홈을 조회합니다. 인증 없이도 접근 가능하며, 사용자 정보, 오늘의 상태, 상태 히스토리, 받은 댓글을 모두 포함합니다. 인증된 상태에서는 팔로우 여부가 포함됩니다.
 
 **Path Parameter:**
 - `userId`: 조회할 사용자의 userId
@@ -739,7 +739,41 @@ Authorization: Bearer {토큰} (선택사항)
   "data": {
     "userId": "u_a1b2c3d4e5f6",
     "nickname": "Public User",
-    "isFollowing": false
+    "isFollowing": null,
+    "todayStatus": {
+      "date": "2026-02-18",
+      "energy": 8,
+      "burden": 3,
+      "passion": 7,
+      "exists": true
+    },
+    "statusHistory": {
+      "count": 10,
+      "items": [
+        {
+          "date": "2026-02-18",
+          "energy": 8,
+          "burden": 3,
+          "passion": 7
+        },
+        {
+          "date": "2026-02-17",
+          "energy": 6,
+          "burden": 5,
+          "passion": 5
+        }
+      ]
+    },
+    "receivedComments": [
+      {
+        "commentId": "c_123456",
+        "authorUserId": "u_friend001",
+        "authorNickname": "Friend User",
+        "targetUserId": "u_a1b2c3d4e5f6",
+        "content": "좋은 하루 보내세요!",
+        "createdAt": 1708257600000
+      }
+    ]
   }
 }
 ```
@@ -752,7 +786,35 @@ Authorization: Bearer {토큰} (선택사항)
   "data": {
     "userId": "u_a1b2c3d4e5f6",
     "nickname": "Public User",
-    "isFollowing": true
+    "isFollowing": true,
+    "todayStatus": {
+      "date": "2026-02-18",
+      "energy": 8,
+      "burden": 3,
+      "passion": 7,
+      "exists": true
+    },
+    "statusHistory": {
+      "count": 10,
+      "items": [
+        {
+          "date": "2026-02-18",
+          "energy": 8,
+          "burden": 3,
+          "passion": 7
+        }
+      ]
+    },
+    "receivedComments": [
+      {
+        "commentId": "c_123456",
+        "authorUserId": "u_friend001",
+        "authorNickname": "Friend User",
+        "targetUserId": "u_a1b2c3d4e5f6",
+        "content": "좋은 하루 보내세요!",
+        "createdAt": 1708257600000
+      }
+    ]
   }
 }
 ```
@@ -765,6 +827,10 @@ Authorization: Bearer {토큰} (선택사항)
   "data": null
 }
 ```
+
+**참고:**
+- 이 엔드포인트는 `/users/me`, `/status/today`, `/status/history`, `/comments/received`의 모든 정보를 한 번에 반환합니다.
+- 공유 링크를 통한 접근 시 1번의 API 호출로 전체 프로필을 조회할 수 있습니다.
 
 ### 5.2 공유 링크 생성
 ```http
@@ -1132,9 +1198,39 @@ curl -X DELETE https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/defau
 {
   "userId": "string",
   "nickname": "string",
-  "isFollowing": "boolean"
+  "isFollowing": "boolean | null",
+  "todayStatus": {
+    "date": "string (YYYY-MM-DD)",
+    "energy": "integer (1-10) | null",
+    "burden": "integer (1-10) | null",
+    "passion": "integer (1-10) | null",
+    "exists": "boolean"
+  },
+  "statusHistory": {
+    "count": "integer",
+    "items": [
+      {
+        "date": "string (YYYY-MM-DD)",
+        "energy": "integer (1-10)",
+        "burden": "integer (1-10)",
+        "passion": "integer (1-10)"
+      }
+    ]
+  },
+  "receivedComments": [
+    {
+      "commentId": "string",
+      "authorUserId": "string",
+      "authorNickname": "string",
+      "targetUserId": "string",
+      "content": "string",
+      "createdAt": "long (timestamp)"
+    }
+  ]
 }
 ```
+
+**참고:** 이 응답은 `/users/me`, `/status/today`, `/status/history`, `/comments/received`의 모든 정보를 통합하여 반환합니다.
 
 ### UserSearchResponse
 ```json
