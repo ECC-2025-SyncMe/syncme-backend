@@ -138,8 +138,10 @@ public class FriendRepository {
                     .sortValue(friend.getSk())
                     .build());
             
+            // SK에서 팔로워 이메일 추출: FOLLOWER#followerEmail -> followerEmail
+            String followerEmail = friend.getSk().replace("FOLLOWER#", "");
+            
             // 상대방의 팔로잉 레코드도 삭제: USER#followerEmail / FOLLOWING#myEmail
-            String followerEmail = friend.getEmail();
             table().deleteItem(Key.builder()
                     .partitionValue("USER#" + followerEmail)
                     .sortValue("FOLLOWING#" + email)
