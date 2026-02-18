@@ -147,31 +147,25 @@ public class AdminService {
     }
     
     /**
-     * 다양한 기분 데이터 생성 (20~90 범위, 전체 구간 골고루)
+     * 다양한 기분 데이터 생성 (ACTIVE/TIRED 상태가 더 많이 나오도록 조정)
      */
     private int generateMoodValue(int dayOffset, int totalDays) {
-        // 5가지 패턴 중 랜덤 선택하여 다양한 점수대 생성
-        int pattern = random.nextInt(5);
+        // 3가지 패턴으로 ACTIVE/TIRED 상태가 더 많이 나오도록 조정
+        int pattern = random.nextInt(3);
         int value;
         
         switch (pattern) {
-            case 0: // 낮은 점수대 (20~40)
-                value = 20 + random.nextInt(21);
+            case 0: // 낮은 점수대 (10~40) - TIRED 유도
+                value = 10 + random.nextInt(31);
                 break;
-            case 1: // 중하 점수대 (35~55)
-                value = 35 + random.nextInt(21);
+            case 1: // 중간 점수대 (40~65) - NORMAL 유도
+                value = 40 + random.nextInt(26);
                 break;
-            case 2: // 중간 점수대 (45~65)
-                value = 45 + random.nextInt(21);
-                break;
-            case 3: // 중상 점수대 (55~75)
-                value = 55 + random.nextInt(21);
-                break;
-            case 4: // 높은 점수대 (70~90)
-                value = 70 + random.nextInt(21);
+            case 2: // 높은 점수대 (65~95) - ACTIVE 유도
+                value = 65 + random.nextInt(31);
                 break;
             default:
-                value = 20 + random.nextInt(71); // 전체 범위 랜덤
+                value = 20 + random.nextInt(71);
         }
         
         return value;
