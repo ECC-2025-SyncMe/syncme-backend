@@ -147,25 +147,22 @@ public class AdminService {
     }
     
     /**
-     * 다양한 기분 데이터 생성 (ACTIVE/TIRED 상태가 더 많이 나오도록 조정)
+     * 다양한 기분 데이터 생성 (active:normal:tired = 3:4:3 비율)
      */
     private int generateMoodValue(int dayOffset, int totalDays) {
-        // 3가지 패턴으로 ACTIVE/TIRED 상태가 더 많이 나오도록 조정
-        int pattern = random.nextInt(3);
+        // 10개 중 3개 TIRED, 4개 NORMAL, 3개 ACTIVE (30%:40%:30%)
+        int pattern = random.nextInt(10);
         int value;
         
-        switch (pattern) {
-            case 0: // 낮은 점수대 (10~40) - TIRED 유도
-                value = 10 + random.nextInt(31);
-                break;
-            case 1: // 중간 점수대 (40~65) - NORMAL 유도
-                value = 40 + random.nextInt(26);
-                break;
-            case 2: // 높은 점수대 (65~95) - ACTIVE 유도
-                value = 65 + random.nextInt(31);
-                break;
-            default:
-                value = 20 + random.nextInt(71);
+        if (pattern <= 2) {
+            // TIRED 유도 (0,1,2 = 30%) - 매우 낮은 값
+            value = 5 + random.nextInt(21); // 5~25
+        } else if (pattern <= 6) {
+            // NORMAL 유도 (3,4,5,6 = 40%) - 중간 값
+            value = 40 + random.nextInt(31); // 40~70
+        } else {
+            // ACTIVE 유도 (7,8,9 = 30%) - 매우 높은 값
+            value = 80 + random.nextInt(16); // 80~95
         }
         
         return value;
