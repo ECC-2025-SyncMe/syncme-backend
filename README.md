@@ -164,50 +164,9 @@ GET /
 
 ## 🔐 Authentication
 
-### Google Login Flow
-
-1. **Login Request**
-```json
-POST /auth/google/login
-{
-  "idToken": "Google OAuth ID Token"
-}
-```
-
-2. **Response (JWT Token Issued)**
-```json
-{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
-    "userId": "u_a1b2c3d4e5f6",
-    "email": "user@example.com",
-    "nickname": "User Name"
-  }
-}
-```
-
 ### Token Expiration
 - **Access Token**: 24 hours
 - **Refresh Token**: 7 days
-
-### Token Refresh
-
-When Access Token expires, refresh with Refresh Token:
-
-```json
-POST /auth/refresh
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
-}
-```
-
-### Authentication Header for API Requests
-
-```http
-Authorization: Bearer {access-token}
-```
 
 ---
 
@@ -233,44 +192,10 @@ src/
 
 ---
 
-## 🌐 Deployment (AWS Lambda)
-
-### Build & Deploy
-
-```bash
-# 1. Build (skip tests)
-./mvnw clean package -DskipTests
-
-# 2. Upload to S3
-aws s3 cp target/syncme-0.0.1-SNAPSHOT-aws.jar \
-  s3://syncme-lambda-deploy/ \
-  --region ap-northeast-2
-
-# 3. Update Lambda function
-aws lambda update-function-code \
-  --function-name syncme-backend \
-  --s3-bucket syncme-lambda-deploy \
-  --s3-key syncme-0.0.1-SNAPSHOT-aws.jar \
-  --region ap-northeast-2 \
-  --no-cli-pager
-```
-
 ### Production URL
 
 ```
 https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default
-```
-
----
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-./mvnw test
-
-# Run specific test
-./mvnw test -Dtest=ServiceTests
 ```
 
 ---
