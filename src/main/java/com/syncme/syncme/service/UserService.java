@@ -9,6 +9,7 @@ import com.syncme.syncme.dto.user.UpdateNicknameRequest;
 import com.syncme.syncme.dto.user.UserResponse;
 import com.syncme.syncme.dto.user.UserSearchResponse;
 import com.syncme.syncme.entity.User;
+import com.syncme.syncme.repository.CommentRepository;
 import com.syncme.syncme.repository.FriendRepository;
 import com.syncme.syncme.repository.StatusRepository;
 import com.syncme.syncme.repository.UserRepository;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     private final StatusRepository statusRepository;
+    private final CommentRepository commentRepository;
     
     public UserResponse getUserInfo(String email) {
         User user = userRepository.findByEmail(email)
@@ -54,7 +56,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // 1. 사용자의 모든 Friend 관계 삭제
+        // 1. 사용자의 모든 Friend 관계 삭제 (양방향 모두 삭제)
         friendRepository.deleteAllByEmail(email);
         log.info("All friend relationships deleted for user: {}", email);
         
@@ -63,7 +65,15 @@ public class UserService {
         statusRepository.deleteAllByPk(pk);
         log.info("All daily status data deleted for user: {}", email);
         
-        // 3. User 계정 삭제
+        // 3. 사용자가 받은 댓글 삭제
+        commentRepository.deleteAllByTargetUserId(user.getUserId());
+        log.info("All received comments deleted for user: {}", email);
+        
+        // 4. 사용자가 작성한 댓글 삭제
+        commentRepository.deleteAllByAuthorEmail(email);
+        log.info("All authored comments deleted for user: {}", email);
+        
+        // 5. User 계정 삭제
         userRepository.delete(user);
         log.info("User account deleted: {}", email);
     }

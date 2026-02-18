@@ -112,21 +112,37 @@ public class FriendRepository {
     }
 
     public void deleteAllByEmail(String email) {
-        // 내가 팔로우한 사람들 삭제
+        // 1. 내가 팔로우한 사람들 목록 조회
         List<Friend> following = findFollowing(email);
         for (Friend friend : following) {
+            // 내 팔로잉 레코드 삭제: USER#myEmail / FOLLOWING#targetEmail
             table().deleteItem(Key.builder()
                     .partitionValue(friend.getPk())
                     .sortValue(friend.getSk())
                     .build());
+            
+            // 상대방의 팔로워 레코드도 삭제: USER#targetEmail / FOLLOWER#myEmail
+            String targetEmail = friend.getEmail();
+            table().deleteItem(Key.builder()
+                    .partitionValue("USER#" + targetEmail)
+                    .sortValue("FOLLOWER#" + email)
+                    .build());
         }
         
-        // 나를 팔로우한 사람들 삭제
+        // 2. 나를 팔로우한 사람들 목록 조회
         List<Friend> followers = findFollowers(email);
         for (Friend friend : followers) {
+            // 내 팔로워 레코드 삭제: USER#myEmail / FOLLOWER#followerEmail
             table().deleteItem(Key.builder()
                     .partitionValue(friend.getPk())
                     .sortValue(friend.getSk())
+                    .build());
+            
+            // 상대방의 팔로잉 레코드도 삭제: USER#followerEmail / FOLLOWING#myEmail
+            String followerEmail = friend.getEmail();
+            table().deleteItem(Key.builder()
+                    .partitionValue("USER#" + followerEmail)
+                    .sortValue("FOLLOWING#" + email)
                     .build());
         }
     }
