@@ -49,4 +49,33 @@ public class AdminController {
         adminService.deleteTestData();
         return ResponseEntity.ok(ApiResponse.success("Test data deleted successfully", null));
     }
+    
+    /**
+     * 기존 사용자에게 과거 데이터 추가
+     * - 특정 이메일의 기존 사용자에게 N일치 과거 데이터 추가
+     * 
+     * @param email 데이터를 추가할 사용자 이메일
+     * @param days 생성할 과거 데이터 일수 (기본값: 14일)
+     */
+    @PostMapping("/add-historical-data")
+    public ResponseEntity<ApiResponse<String>> addHistoricalData(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "14") int days
+    ) {
+        log.info("Adding {} days of historical data for user: {}", days, email);
+        
+        if (days < 1 || days > 90) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Days must be between 1 and 90"));
+        }
+        
+        try {
+            adminService.addHistoricalDataForUser(email, days);
+            String message = String.format("Successfully added %d days of historical data for %s", days, email);
+            return ResponseEntity.ok(ApiResponse.success(message, message));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }

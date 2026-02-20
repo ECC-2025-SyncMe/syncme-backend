@@ -207,4 +207,27 @@ public class AdminService {
         
         log.info("All test data deleted successfully");
     }
-}
+    
+    /**
+     * 기존 사용자에게 과거 N일간의 데이터 추가
+     */
+    public void addHistoricalDataForUser(String email, int days) {
+        // 사용자가 존재하는지 확인
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+        
+        log.info("Found user: {} (userId: {})", email, user.getUserId());
+        
+        // 기존 데이터 삭제 (선택사항 - 원하면 주석 처리)
+        String pk = "USER#" + email;
+        List<DailyStatus> existingStatuses = statusRepository.findAllByPkOrderBySkDesc(pk);
+        for (DailyStatus status : existingStatuses) {
+            statusRepository.deleteByPkSk(status.getPk(), status.getSk());
+        }
+        log.info("Deleted {} existing status records for {}", existingStatuses.size(), email);
+        
+        // 새로운 과거 데이터 생성
+        createHistoricalData(email, days);
+        
+        log.info("Successfully added {} days of historical data for {}", days, email);
+    }}

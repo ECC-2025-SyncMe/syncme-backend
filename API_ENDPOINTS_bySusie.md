@@ -1453,6 +1453,84 @@ curl -X POST "https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/defaul
 
 ---
 
+### 📥 기존 사용자에게 과거 데이터 추가
+
+**설명:** 이미 존재하는 사용자(이메일)에게 N일치 과거 상태 데이터를 추가합니다. 기존 Status 데이터는 삭제되고 새로운 데이터로 대체됩니다.
+
+**Endpoint:**
+```http
+POST /admin/add-historical-data?email={email}&days={days}
+```
+
+**Full URL:**
+```
+POST https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/add-historical-data?email=0ne.earth@ewhain.net&days=14
+```
+
+**Query Parameters:**
+- `email` (required): 데이터를 추가할 사용자의 이메일
+- `days` (optional): 생성할 과거 데이터 일수 (기본값: 14, 범위: 1~90)
+
+**Request:** 없음 (Query parameters만 사용)
+
+**Response (성공):**
+```json
+{
+  "success": true,
+  "message": "Successfully added 14 days of historical data for 0ne.earth@ewhain.net",
+  "data": "Successfully added 14 days of historical data for 0ne.earth@ewhain.net"
+}
+```
+
+**Response (실패 - 사용자 없음):**
+```json
+{
+  "success": false,
+  "message": "User not found with email: 0ne.earth@ewhain.net",
+  "data": null
+}
+```
+
+**Response (실패 - 잘못된 days 범위):**
+```json
+{
+  "success": false,
+  "message": "Days must be between 1 and 90",
+  "data": null
+}
+```
+
+**생성되는 데이터:**
+- 과거 N일간의 DailyStatus 레코드 (Energy, Burden, Passion)
+- 데이터 패턴: TIRED(30%) / NORMAL(40%) / ACTIVE(30%) 비율
+- 기존 Status History 데이터는 삭제됨 (User 계정은 유지)
+
+**cURL 예시:**
+```bash
+# 0ne.earth@ewhain.net에 14일 데이터 추가
+curl -X POST "https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/add-historical-data?email=0ne.earth@ewhain.net&days=14"
+
+# 30일 데이터 추가
+curl -X POST "https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/add-historical-data?email=0ne.earth@ewhain.net&days=30"
+```
+
+**⚠️ 주의사항:**
+- 사용자 계정은 DB에 이미 존재해야 합니다 (로그인 한 번이라도 해야 함)
+- 기존 Status 데이터는 모두 삭제되고 새로운 데이터로 대체됩니다
+- User 정보(닉네임, 이메일 등)는 유지됩니다
+
+---
+
+### 🗑️ 테스트 데이터 삭제 API
+
+**직접 API 호출 (필요시):**
+```bash
+# Lambda 배포 서버로 호출
+curl -X POST "https://lrcc5bl2sj.execute-api.ap-northeast-2.amazonaws.com/default/admin/test-data?days=14"
+```
+
+---
+
 ### 🗑️ 테스트 데이터 삭제 API
 
 ```http
